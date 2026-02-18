@@ -4,16 +4,25 @@ from lib.vec3 import Int3
 
 
 class FieldArray:
-    def __init__(self, dims: Int3, n_ghosts: Int3):
+    def __init__(self, dims: Int3, n_ghosts: Int3 | tuple[Int3, Int3]):
         self.dims = dims
-        self.n_ghosts = n_ghosts
-        self.array = np.zeros(dims + 2 * n_ghosts)
+        if isinstance(n_ghosts, Int3):
+            n_ghosts = (n_ghosts, n_ghosts)
+        self.n_ghosts_lower, self.n_ghosts_upper = n_ghosts
+        self._array = np.zeros(self.n_ghosts_lower + dims + self.n_ghosts_upper)
+
+    def _shift_idx(self, i3: Int3) -> Int3:
+        shifted_i3 = i3 + self.n_ghosts_lower
+        for d in range(3):
+            while shifted_i3[d] < 0:
+                shifted_i3[d] += self.dims[d]
+        return shifted_i3
 
     def __getitem__(self, i3: Int3) -> float:
-        return self.array[*(self.n_ghosts + i3)]
+        return self._array[*self._shift_idx(i3)]
 
     def __setitem__(self, i3: Int3, val: float):
-        self.array[*(self.n_ghosts + i3)] = val
+        self._array[*self._shift_idx(i3)] = val
 
 
 if __name__ == "__main__":
