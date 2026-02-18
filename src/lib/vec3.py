@@ -118,6 +118,11 @@ class Float3(Vec3[float]):
         super().__init__(x, y, z, dtype=float)
 
 
+class Bool3(Vec3[bool]):
+    def __init__(self, x: bool, y: bool, z: bool):
+        super().__init__(x, y, z, dtype=bool)
+
+
 if __name__ == "__main__":
     # basic Vec3 tests
 
