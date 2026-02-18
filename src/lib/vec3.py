@@ -106,12 +106,12 @@ class Vec3[T]:
 
 
 class Int3(Vec3[int]):
-    def __init__(self, x, y, z):
+    def __init__(self, x: int, y: int, z: int):
         super().__init__(x, y, z, dtype=int)
 
 
 class Float3(Vec3[float]):
-    def __init__(self, x, y, z):
+    def __init__(self, x: float, y: float, z: float):
         super().__init__(x, y, z, dtype=float)
 
 
