@@ -12,11 +12,7 @@ class FieldArray:
         self._array = np.zeros(self.n_ghosts_lower + dims + self.n_ghosts_upper)
 
     def _shift_idx(self, i3: Int3) -> Int3:
-        shifted_i3 = i3 + self.n_ghosts_lower
-        for d in range(3):
-            while shifted_i3[d] < 0:
-                shifted_i3[d] += self.dims[d]
-        return shifted_i3
+        return i3 + self.n_ghosts_lower
 
     def __getitem__(self, i3: Int3) -> float:
         return self._array[*self._shift_idx(i3)]
