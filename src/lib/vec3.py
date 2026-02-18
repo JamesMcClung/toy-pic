@@ -15,6 +15,9 @@ class Vec3[T]:
 
         self._dtype = dtype
 
+    def __iter__(self):
+        yield from self._vals
+
     def __getitem__(self, d: int) -> T:
         return self._vals[d]
 
