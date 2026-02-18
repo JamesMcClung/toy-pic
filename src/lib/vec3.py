@@ -4,8 +4,15 @@ from typing import Self
 class Vec3[T]:
     _vals: tuple[T, T, T]
 
-    def __init__(self, x: T, y: T, z: T, *, dtype: type[T]):
+    def __init__(self, x: T, y: T, z: T, *, dtype: type[T] | None = None):
         self._vals = (x, y, z)
+
+        if dtype is None:
+            if x.__class__ is y.__class__ is z.__class__:
+                dtype = x.__class__
+            else:
+                raise Exception("unspecified and inconsistent dtype")
+
         self._dtype = dtype
 
     def __getitem__(self, d: int) -> T:
