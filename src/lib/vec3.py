@@ -24,6 +24,9 @@ class Vec3[T]:
     def __setitem__(self, d: int, val: T):
         self._vals[d] = val
 
+    def copy(self) -> Self:
+        return Self(self.x, self.y, self.z)
+
     @property
     def x(self) -> T:
         return self[0]
