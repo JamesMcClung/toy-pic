@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Self
 
 
@@ -50,6 +52,22 @@ class Vec3[T]:
     @z.setter
     def z(self, val: T):
         self[2] = val
+
+    def __eq__(self, other: Self | T) -> Bool3:
+        if isinstance(other, self.__class__):
+            return Bool3(self.x == other.x, self.y == other.y, self.z == other.z)
+        elif isinstance(other, self._dtype):
+            return Bool3(self.x == other, self.y == other, self.z == other)
+        else:
+            return NotImplemented
+
+    def __ne__(self, other: Self | T) -> Bool3:
+        if isinstance(other, self.__class__):
+            return Bool3(self.x != other.x, self.y != other.y, self.z != other.z)
+        elif isinstance(other, self._dtype):
+            return Bool3(self.x != other, self.y != other, self.z != other)
+        else:
+            return NotImplemented
 
     def __add__(self, other: Self | T) -> Self:
         if isinstance(other, self.__class__):
@@ -122,6 +140,12 @@ class Bool3(Vec3[bool]):
     def __init__(self, x: bool, y: bool, z: bool):
         super().__init__(x, y, z, dtype=bool)
 
+    def all(self) -> bool:
+        return all(self._vals)
+
+    def any(self) -> bool:
+        return any(self._vals)
+
 
 if __name__ == "__main__":
     # basic Vec3 tests
@@ -134,5 +158,9 @@ if __name__ == "__main__":
 
     f3 = Float3(1, 2, 3)
     assert f3._dtype is float
+
+    assert (Int3(1, 2, 3) == Int3(1, 2, 3)).all()
+    assert not (Int3(1, 2, 3) == Int3(1, 2, 77)).all()
+    assert (Int3(1, 2, 3) != Int3(1, 2, 77)).any()
 
     print("tests passed")
