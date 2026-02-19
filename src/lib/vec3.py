@@ -169,4 +169,4 @@ def test():
     assert not (Int3(1, 2, 3) == Int3(1, 2, 77)).all()
     assert (Int3(1, 2, 3) != Int3(1, 2, 77)).any()
 
-    assert (Int3(1, 2, 3) + Int3(0, 2, 3) != Int3(1, 4, 6)).all()
+    assert (Int3(1, 2, 3) + Int3(0, 2, 3) == Int3(1, 4, 6)).all()
