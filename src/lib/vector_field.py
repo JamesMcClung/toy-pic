@@ -1,9 +1,6 @@
-from typing import Callable
-
 from lib.centering import VectorCentering
 from lib.domain import Domain
-from lib.field_array import FieldArray
-from lib.range3 import Range3
+from lib.scalar_field import ScalarField
 from lib.vec3 import Bool3, Float3, Int3
 
 
@@ -16,30 +13,21 @@ class VectorField:
         self.domain = domain
         self.centering = centering
 
-        self._components = []
-        for d in range(3):
-            # nc values at upper edge of aperiodic dimension are in the domain
-            comp_dims = domain.dims + (~domain.periodic_dims & ~self.centering.comp_is_ccs(d)).to_mask()
-            self._components.append(FieldArray(comp_dims, n_ghosts=domain.vary_dims.to_mask() * domain.n_ghosts))
+        self._components = [ScalarField(domain, c) for c in centering]
 
-    def set_component_from_func(self, d: int, func: Callable[[Float3], float]):
-        for i3 in Range3(self[d].dims):
-            pos = self.domain.corner_pos + self.domain.deltas * (i3.to_float3() + self.centering.comp_offsets(d))
-            self[d][i3] = func(pos)
-
-    def __getitem__(self, d: int) -> FieldArray:
+    def __getitem__(self, d: int) -> ScalarField:
         return self._components[d]
 
     @property
-    def x(self) -> FieldArray:
+    def x(self) -> ScalarField:
         return self._components[0]
 
     @property
-    def y(self) -> FieldArray:
+    def y(self) -> ScalarField:
         return self._components[1]
 
     @property
-    def z(self) -> FieldArray:
+    def z(self) -> ScalarField:
         return self._components[2]
 
 
@@ -60,9 +48,9 @@ def test():
     assert (ec_field.z.n_ghosts_lower == Int3(0, 1, 1)).all()
     assert (ec_field.z.n_ghosts_upper == Int3(0, 1, 1)).all()
 
-    ec_field.set_component_from_func(0, lambda pos: pos.x)
-    ec_field.set_component_from_func(1, lambda pos: pos.x)
-    ec_field.set_component_from_func(2, lambda pos: pos.x)
+    ec_field.x.set_from_func(lambda pos: pos.x)
+    ec_field.y.set_from_func(lambda pos: pos.x)
+    ec_field.z.set_from_func(lambda pos: pos.x)
 
     assert ec_field.x[Int3(0, 1, 0)] == 0.25
     assert ec_field.y[Int3(0, 1, 0)] == 0.0
