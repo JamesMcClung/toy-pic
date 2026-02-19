@@ -152,6 +152,11 @@ if __name__ == "__main__":
 
     i3 = Int3(1, 2, 3)
     assert i3._dtype is int
+    assert i3.x == 1
+    assert i3[0] == 1
+    i3.x = 2
+    assert i3.x == 2
+    assert i3[0] == 2
 
     f3 = Float3(1.0, 2, 3)
     assert f3._dtype is float
