@@ -4,12 +4,13 @@ from lib.vec3 import Int3
 
 
 class FieldArray:
-    def __init__(self, dims: Int3, n_ghosts: Int3 | tuple[Int3, Int3]):
+    def __init__(self, dims: Int3, n_ghosts: Int3 | tuple[Int3, Int3], *, _array: np.ndarray | None = None):
         self.dims = dims
         if isinstance(n_ghosts, Int3):
             n_ghosts = (n_ghosts, n_ghosts)
         self.n_ghosts_lower, self.n_ghosts_upper = n_ghosts
-        self._array = np.zeros(self.n_ghosts_lower + dims + self.n_ghosts_upper)
+
+        self._array = _array if _array is not None else np.zeros(self.n_ghosts_lower + dims + self.n_ghosts_upper)
 
     def _shift_idx(self, i3: Int3) -> Int3:
         return i3 + self.n_ghosts_lower
