@@ -27,5 +27,5 @@ def test():
     i3 = Int3(1, -1, 0)
     assert field[i3] == 0.0
 
-    field[i3] == 1.0
+    field[i3] = 1.0
     assert field[i3] == 1.0
