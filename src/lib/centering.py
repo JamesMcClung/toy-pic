@@ -1,6 +1,6 @@
 from enum import Enum, auto
 
-from lib.vec3 import Bool3
+from lib.vec3 import Bool3, Float3
 
 
 class VectorCentering(Enum):
@@ -19,6 +19,9 @@ class VectorCentering(Enum):
                 return Bool3(d != 0, d != 1, d != 2)
             case VectorCentering.CC:
                 return Bool3(True, True, True)
+
+    def component_offsets(self, d: int) -> Float3:
+        return self.component_centered(d).to_mask().to_float3() * 0.5
 
 
 def test():
