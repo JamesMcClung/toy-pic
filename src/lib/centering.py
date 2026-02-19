@@ -21,10 +21,6 @@ class VectorCentering(Enum):
                 return Bool3(True, True, True)
 
 
-if __name__ == "__main__":
-    # basic tests
-
+def test():
     assert (VectorCentering.EC.component_centered(0) == Bool3(True, False, False)).all()
     assert (VectorCentering.FC.component_centered(0) == Bool3(False, True, True)).all()
-
-    print("tests passed")

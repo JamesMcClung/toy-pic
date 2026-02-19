@@ -150,9 +150,7 @@ class Bool3(Vec3[bool]):
         return Int3(*self)
 
 
-if __name__ == "__main__":
-    # basic Vec3 tests
-
+def test():
     i3 = Int3(1, 2, 3)
     assert i3._dtype is int
     assert i3.x == 1
@@ -170,5 +168,3 @@ if __name__ == "__main__":
     assert (Int3(1, 2, 3) == Int3(1, 2, 3)).all()
     assert not (Int3(1, 2, 3) == Int3(1, 2, 77)).all()
     assert (Int3(1, 2, 3) != Int3(1, 2, 77)).any()
-
-    print("tests passed")

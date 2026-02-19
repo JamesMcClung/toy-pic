@@ -21,9 +21,7 @@ class FieldArray:
         self._array[*self._shift_idx(i3)] = val
 
 
-if __name__ == "__main__":
-    # basic tests
-
+def test():
     field = FieldArray(Int3(4, 4, 4), Int3(2, 2, 2))
 
     i3 = Int3(1, -1, 0)
@@ -31,5 +29,3 @@ if __name__ == "__main__":
 
     field[i3] == 1.0
     assert field[i3] == 1.0
-
-    print("tests passed")
