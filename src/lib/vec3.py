@@ -27,7 +27,7 @@ class Vec3[T]:
         self._vals[d] = val
 
     def copy(self) -> Self:
-        return Self(self.x, self.y, self.z)
+        return self.__class__(self.x, self.y, self.z)
 
     @property
     def x(self) -> T:
@@ -71,57 +71,57 @@ class Vec3[T]:
 
     def __add__(self, other: Self | T) -> Self:
         if isinstance(other, self.__class__):
-            return Self(self.x + other.x, self.y + other.y, self.z + other.z)
+            return self.__class__(self.x + other.x, self.y + other.y, self.z + other.z)
         elif isinstance(other, self._dtype):
-            return Self(self.x + other, self.y + other, self.z + other)
+            return self.__class__(self.x + other, self.y + other, self.z + other)
         else:
             return NotImplemented
 
     def __sub__(self, other: Self | T) -> Self:
         if isinstance(other, self.__class__):
-            return Self(self.x - other.x, self.y - other.y, self.z - other.z)
+            return self.__class__(self.x - other.x, self.y - other.y, self.z - other.z)
         elif isinstance(other, self._dtype):
-            return Self(self.x - other, self.y - other, self.z - other)
+            return self.__class__(self.x - other, self.y - other, self.z - other)
         else:
             return NotImplemented
 
     def __mul__(self, other: Self | T) -> Self:
         if isinstance(other, self.__class__):
-            return Self(self.x * other.x, self.y * other.y, self.z * other.z)
+            return self.__class__(self.x * other.x, self.y * other.y, self.z * other.z)
         elif isinstance(other, self._dtype):
-            return Self(self.x * other, self.y * other, self.z * other)
+            return self.__class__(self.x * other, self.y * other, self.z * other)
         else:
             return NotImplemented
 
     def __truediv__(self, other: Self | T) -> Self:
         if isinstance(other, self.__class__):
-            return Self(self.x / other.x, self.y / other.y, self.z / other.z)
+            return self.__class__(self.x / other.x, self.y / other.y, self.z / other.z)
         elif isinstance(other, self._dtype):
-            return Self(self.x / other, self.y / other, self.z / other)
+            return self.__class__(self.x / other, self.y / other, self.z / other)
         else:
             return NotImplemented
 
     def __div__(self, other: Self | T) -> Self:
         if isinstance(other, self.__class__):
-            return Self(self.x // other.x, self.y // other.y, self.z // other.z)
+            return self.__class__(self.x // other.x, self.y // other.y, self.z // other.z)
         elif isinstance(other, self._dtype):
-            return Self(self.x // other, self.y // other, self.z // other)
+            return self.__class__(self.x // other, self.y // other, self.z // other)
         else:
             return NotImplemented
 
     def __rtruediv__(self, other: Self | T) -> Self:
         if isinstance(other, self.__class__):
-            return Self(other.x / self.x, other.y / self.y, other.z / self.z)
+            return self.__class__(other.x / self.x, other.y / self.y, other.z / self.z)
         elif isinstance(other, self._dtype):
-            return Self(other / self.x, other / self.y, other / self.z)
+            return self.__class__(other / self.x, other / self.y, other / self.z)
         else:
             return NotImplemented
 
     def __rdiv__(self, other: Self | T) -> Self:
         if isinstance(other, self.__class__):
-            return Self(other.x // self.x, other.y // self.y, other.z // self.z)
+            return self.__class__(other.x // self.x, other.y // self.y, other.z // self.z)
         elif isinstance(other, self._dtype):
-            return Self(other // self.x, other // self.y, other // self.z)
+            return self.__class__(other // self.x, other // self.y, other // self.z)
         else:
             return NotImplemented
 
@@ -168,3 +168,5 @@ def test():
     assert (Int3(1, 2, 3) == Int3(1, 2, 3)).all()
     assert not (Int3(1, 2, 3) == Int3(1, 2, 77)).all()
     assert (Int3(1, 2, 3) != Int3(1, 2, 77)).any()
+
+    assert (Int3(1, 2, 3) + Int3(0, 2, 3) != Int3(1, 4, 6)).all()
