@@ -4,10 +4,10 @@ from typing import Self
 
 
 class Vec3[T]:
-    _vals: tuple[T, T, T]
+    _vals: list[T]
 
     def __init__(self, x: T, y: T, z: T, *, dtype: type[T] | None = None):
-        self._vals = (x, y, z)
+        self._vals = [x, y, z]
 
         if dtype is None:
             if x.__class__ is y.__class__ is z.__class__:
