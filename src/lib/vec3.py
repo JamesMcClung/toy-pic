@@ -146,6 +146,9 @@ class Bool3(Vec3[bool]):
     def any(self) -> bool:
         return any(self._vals)
 
+    def to_mask(self) -> Int3:
+        return Int3(*self)
+
 
 if __name__ == "__main__":
     # basic Vec3 tests
