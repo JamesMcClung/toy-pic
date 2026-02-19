@@ -1,29 +1,55 @@
-from enum import Enum, auto
+from typing import Self
 
 from lib.vec3 import Bool3, Float3
 
 
-class VectorCentering(Enum):
-    NC = auto()
-    EC = auto()
-    FC = auto()
-    CC = auto()
+class VectorCentering:
+    def __init__(self, x_cc: Bool3, y_cc: Bool3, z_cc: Bool3):
+        self._is_ccss = [x_cc, y_cc, z_cc]
+        self._offsetss = [comp_is_ccs.to_mask().to_float3() * 0.5 for comp_is_ccs in self._is_ccss]
 
-    def component_centered(self, d: int) -> Bool3:
-        match self:
-            case VectorCentering.NC:
-                return Bool3(False, False, False)
-            case VectorCentering.EC:
-                return Bool3(d == 0, d == 1, d == 2)
-            case VectorCentering.FC:
-                return Bool3(d != 0, d != 1, d != 2)
-            case VectorCentering.CC:
-                return Bool3(True, True, True)
+    def comp_is_ccs(self, d: int) -> Bool3:
+        return self._is_ccss[d]
 
-    def component_offsets(self, d: int) -> Float3:
-        return self.component_centered(d).to_mask().to_float3() * 0.5
+    def comp_offsets(self, d: int) -> Float3:
+        return self._offsetss[d]
+
+    def copy(self) -> Self:
+        return VectorCentering(*(is_comp_cc.copy() for is_comp_cc in self._is_ccss))
+
+    @classmethod
+    def nc(cls) -> Self:
+        return cls(
+            Bool3(False, False, False),
+            Bool3(False, False, False),
+            Bool3(False, False, False),
+        )
+
+    @classmethod
+    def ec(cls) -> Self:
+        return cls(
+            Bool3(True, False, False),
+            Bool3(False, True, False),
+            Bool3(False, False, True),
+        )
+
+    @classmethod
+    def fc(cls) -> Self:
+        return cls(
+            Bool3(False, True, True),
+            Bool3(True, False, True),
+            Bool3(True, True, False),
+        )
+
+    @classmethod
+    def cc(cls) -> Self:
+        return cls(
+            Bool3(True, True, True),
+            Bool3(True, True, True),
+            Bool3(True, True, True),
+        )
 
 
 def test():
-    assert (VectorCentering.EC.component_centered(0) == Bool3(True, False, False)).all()
-    assert (VectorCentering.FC.component_centered(0) == Bool3(False, True, True)).all()
+    assert (VectorCentering.ec().comp_is_ccs(0) == Bool3(True, False, False)).all()
+    assert (VectorCentering.fc().comp_is_ccs(0) == Bool3(False, True, True)).all()

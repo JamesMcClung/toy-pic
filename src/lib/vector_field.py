@@ -19,12 +19,12 @@ class VectorField:
         self._components = []
         for d in range(3):
             # nc values at upper edge of aperiodic dimension are in the domain
-            comp_dims = domain.dims + (~domain.periodic_dims & ~self.centering.component_centered(d)).to_mask()
+            comp_dims = domain.dims + (~domain.periodic_dims & ~self.centering.comp_is_ccs(d)).to_mask()
             self._components.append(FieldArray(comp_dims, n_ghosts=domain.vary_dims.to_mask() * domain.n_ghosts))
 
     def set_component_from_func(self, d: int, func: Callable[[Float3], float]):
         for i3 in Range3(self[d].dims):
-            pos = self.domain.corner_pos + self.domain.deltas * (i3.to_float3() + self.centering.component_offsets(d))
+            pos = self.domain.corner_pos + self.domain.deltas * (i3.to_float3() + self.centering.comp_offsets(d))
             self[d][i3] = func(pos)
 
     def __getitem__(self, d: int) -> FieldArray:
@@ -46,7 +46,7 @@ class VectorField:
 def test():
     dims = Int3(1, 8, 4)
     domain = Domain(dims, Float3(0.5, 0.5, 0.5), periodic_dims=Bool3(True, False, True))
-    ec_field = VectorField(domain, VectorCentering.EC)
+    ec_field = VectorField(domain, VectorCentering.ec())
 
     assert (ec_field.x.dims == Int3(1, 9, 4)).all()
     assert (ec_field.x.n_ghosts_lower == Int3(0, 1, 1)).all()
