@@ -1,10 +1,20 @@
+from typing import overload
+
 from lib.vec3 import Int3
 
 
 class Range3:
-    def __init__(self, start: Int3, stop: Int3):
-        self.start = start
-        self.stop = stop
+    @overload
+    def __init__(self, stop: Int3): ...
+    @overload
+    def __init__(self, start: Int3, stop: Int3): ...
+    def __init__(self, start_or_stop: Int3, stop_or_none: Int3 | None = None):
+        if stop_or_none:
+            self.start = start_or_stop
+            self.stop = stop_or_none
+        else:
+            self.start = Int3(0, 0, 0)
+            self.stop = start_or_stop
 
     def __iter__(self):
         i3 = self.start.copy()
