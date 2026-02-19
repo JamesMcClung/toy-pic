@@ -16,7 +16,7 @@ class VectorField:
         self._components = []
         for d in range(3):
             # nc values at upper edge are in domain
-            comp_dims = domain.dims + centering.component_centered(d).flip().to_mask()
+            comp_dims = domain.dims + centering.component_centered(d).flip().to_mask() * domain.vary_dims.to_mask()
             self._components.append(FieldArray(comp_dims, n_ghosts=domain.vary_dims.to_mask() * domain.n_ghosts))
 
     def __getitem__(self, d: int) -> FieldArray:
