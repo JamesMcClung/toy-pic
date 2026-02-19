@@ -149,6 +149,9 @@ class Bool3(Vec3[bool]):
     def to_mask(self) -> Int3:
         return Int3(*self)
 
+    def flip(self) -> Self:
+        return self.__class__(not self.x, not self.y, not self.z)
+
 
 def test():
     i3 = Int3(1, 2, 3)
