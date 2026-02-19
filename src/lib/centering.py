@@ -1,6 +1,6 @@
 from typing import Self
 
-from lib.vec3 import Bool3, Float3
+from lib.vec3 import Bool3
 
 
 class ScalarCentering:
