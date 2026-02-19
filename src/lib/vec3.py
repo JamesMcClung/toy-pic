@@ -133,6 +133,9 @@ class Int3(Vec3[int]):
     def __init__(self, x: int, y: int, z: int):
         super().__init__(x, y, z, dtype=int)
 
+    def to_float3(self) -> Float3:
+        return Float3(float(self.x), float(self.y), float(self.z))
+
 
 class Float3(Vec3[float]):
     def __init__(self, x: float, y: float, z: float):
