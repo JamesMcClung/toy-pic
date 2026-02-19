@@ -16,6 +16,14 @@ class ScalarCentering:
         return cls(Bool3(False, False, False))
 
     @classmethod
+    def ec(cls, d: int) -> Self:
+        return cls(Bool3(d == 0, d == 1, d == 2))
+
+    @classmethod
+    def fc(cls, d: int) -> Self:
+        return cls(Bool3(d != 0, d != 1, d != 2))
+
+    @classmethod
     def cc(cls) -> Self:
         return cls(Bool3(True, True, True))
 
@@ -35,35 +43,19 @@ class VectorCentering:
 
     @classmethod
     def nc(cls) -> Self:
-        return cls(
-            ScalarCentering.nc(),
-            ScalarCentering.nc(),
-            ScalarCentering.nc(),
-        )
+        return cls(ScalarCentering.nc(), ScalarCentering.nc(), ScalarCentering.nc())
 
     @classmethod
     def ec(cls) -> Self:
-        return cls(
-            ScalarCentering(Bool3(True, False, False)),
-            ScalarCentering(Bool3(False, True, False)),
-            ScalarCentering(Bool3(False, False, True)),
-        )
+        return cls(ScalarCentering.ec(0), ScalarCentering.ec(1), ScalarCentering.ec(2))
 
     @classmethod
     def fc(cls) -> Self:
-        return cls(
-            ScalarCentering(Bool3(False, True, True)),
-            ScalarCentering(Bool3(True, False, True)),
-            ScalarCentering(Bool3(True, True, False)),
-        )
+        return cls(ScalarCentering.fc(0), ScalarCentering.fc(1), ScalarCentering.fc(2))
 
     @classmethod
     def cc(cls) -> Self:
-        return cls(
-            ScalarCentering.cc(),
-            ScalarCentering.cc(),
-            ScalarCentering.cc(),
-        )
+        return cls(ScalarCentering.cc(), ScalarCentering.cc(), ScalarCentering.cc())
 
 
 def test():
