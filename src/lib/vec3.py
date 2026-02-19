@@ -155,7 +155,7 @@ class Bool3(Vec3[bool]):
     def to_mask(self) -> Int3:
         return Int3(*self)
 
-    def flip(self) -> Self:
+    def __invert__(self) -> Self:
         return self.__class__(not self.x, not self.y, not self.z)
 
     def __or__(self, other: Self | bool) -> Self:

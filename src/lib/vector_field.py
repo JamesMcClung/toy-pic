@@ -19,7 +19,7 @@ class VectorField:
         self._components = []
         for d in range(3):
             # nc values at upper edge are in domain
-            comp_dims = domain.dims + centering.component_centered(d).flip().to_mask() * domain.vary_dims.to_mask()
+            comp_dims = domain.dims + centering.component_centered(d).__invert__().to_mask() * domain.vary_dims.to_mask()
             self._components.append(FieldArray(comp_dims, n_ghosts=domain.vary_dims.to_mask() * domain.n_ghosts))
 
     def set_component_from_func(self, d: int, func: Callable[[Float3], float]):
