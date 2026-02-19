@@ -158,6 +158,22 @@ class Bool3(Vec3[bool]):
     def flip(self) -> Self:
         return self.__class__(not self.x, not self.y, not self.z)
 
+    def __or__(self, other: Self | bool) -> Self:
+        if isinstance(other, self.__class__):
+            return self.__class__(other.x | self.x, other.y | self.y, other.z | self.z)
+        elif isinstance(other, self._dtype):
+            return self.__class__(other | self.x, other | self.y, other | self.z)
+        else:
+            return NotImplemented
+
+    def __and__(self, other: Self | bool) -> Self:
+        if isinstance(other, self.__class__):
+            return self.__class__(other.x & self.x, other.y & self.y, other.z & self.z)
+        elif isinstance(other, self._dtype):
+            return self.__class__(other & self.x, other & self.y, other & self.z)
+        else:
+            return NotImplemented
+
 
 def test():
     i3 = Int3(1, 2, 3)
