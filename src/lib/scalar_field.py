@@ -7,7 +7,7 @@ from lib.range3 import Range3
 from lib.vec3 import Bool3, Float3, Int3
 
 
-class ScalarField:
+class ScalarField(FieldArray):
     def __init__(
         self,
         domain: Domain,
@@ -17,12 +17,12 @@ class ScalarField:
         self.centering = centering
 
         dims = domain.dims + (~domain.periodic_dims & ~self.centering.is_ccs).to_mask()
-        self.array = FieldArray(dims, n_ghosts=domain.vary_dims.to_mask() * domain.n_ghosts)
+        super().__init__(dims, n_ghosts=domain.vary_dims.to_mask() * domain.n_ghosts)
 
     def set_from_func(self, func: Callable[[Float3], float]):
-        for i3 in Range3(self.array.dims):
+        for i3 in Range3(self.dims):
             pos = self.domain.corner_pos + self.domain.deltas * (i3.to_float3() + self.centering.offsets)
-            self.array[i3] = func(pos)
+            self[i3] = func(pos)
 
 
 def test():
@@ -32,22 +32,22 @@ def test():
 
     cc_field = ScalarField(domain, ScalarCentering.cc())
 
-    assert (cc_field.array.dims == Int3(1, 8, 4)).all()
-    assert (cc_field.array.n_ghosts_lower == Int3(0, 1, 1)).all()
-    assert (cc_field.array.n_ghosts_upper == Int3(0, 1, 1)).all()
+    assert (cc_field.dims == Int3(1, 8, 4)).all()
+    assert (cc_field.n_ghosts_lower == Int3(0, 1, 1)).all()
+    assert (cc_field.n_ghosts_upper == Int3(0, 1, 1)).all()
 
     cc_field.set_from_func(lambda pos: pos.y)
 
-    assert cc_field.array[Int3(0, 1, 0)] == 1.5
-    assert cc_field.array[Int3(0, 2, 0)] == 2.5
+    assert cc_field[Int3(0, 1, 0)] == 1.5
+    assert cc_field[Int3(0, 2, 0)] == 2.5
 
     nc_field = ScalarField(domain, ScalarCentering.nc())
 
-    assert (nc_field.array.dims == Int3(1, 9, 4)).all()
-    assert (nc_field.array.n_ghosts_lower == Int3(0, 1, 1)).all()
-    assert (nc_field.array.n_ghosts_upper == Int3(0, 1, 1)).all()
+    assert (nc_field.dims == Int3(1, 9, 4)).all()
+    assert (nc_field.n_ghosts_lower == Int3(0, 1, 1)).all()
+    assert (nc_field.n_ghosts_upper == Int3(0, 1, 1)).all()
 
     nc_field.set_from_func(lambda pos: pos.y)
 
-    assert nc_field.array[Int3(0, 1, 0)] == 1.0
-    assert nc_field.array[Int3(0, 2, 0)] == 2.0
+    assert nc_field[Int3(0, 1, 0)] == 1.0
+    assert nc_field[Int3(0, 2, 0)] == 2.0
