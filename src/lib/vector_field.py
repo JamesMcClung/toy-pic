@@ -1,6 +1,7 @@
 from lib.centering import VectorCentering
 from lib.domain import Domain
 from lib.field_array import FieldArray
+from lib.vec3 import Float3, Int3
 
 
 class VectorField:
@@ -32,3 +33,21 @@ class VectorField:
     @property
     def z(self) -> FieldArray:
         return self._components[2]
+
+
+def test():
+    dims = Int3(1, 8, 4)
+    domain = Domain(dims, Float3(0.5, 0.5, 0.5))
+    ec_field = VectorField(domain, VectorCentering.EC)
+
+    assert (ec_field.x.dims == Int3(1, 9, 5)).all()
+    assert (ec_field.x.n_ghosts_lower == Int3(0, 1, 1)).all()
+    assert (ec_field.x.n_ghosts_upper == Int3(0, 1, 1)).all()
+
+    assert (ec_field.y.dims == Int3(1, 8, 5)).all()
+    assert (ec_field.y.n_ghosts_lower == Int3(0, 1, 1)).all()
+    assert (ec_field.y.n_ghosts_upper == Int3(0, 1, 1)).all()
+
+    assert (ec_field.z.dims == Int3(1, 9, 4)).all()
+    assert (ec_field.z.n_ghosts_lower == Int3(0, 1, 1)).all()
+    assert (ec_field.z.n_ghosts_upper == Int3(0, 1, 1)).all()
