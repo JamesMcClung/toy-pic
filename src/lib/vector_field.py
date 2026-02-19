@@ -10,7 +10,7 @@ class VectorField:
         domain: Domain,
         centering: VectorCentering,
         *,
-        n_ghosts: int = 1,
+        n_ghosts: int | Int3 | tuple[Int3, Int3] = 1,
     ):
         self.domain = domain
         self.centering = centering
