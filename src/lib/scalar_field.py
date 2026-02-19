@@ -12,12 +12,14 @@ class ScalarField(FieldArray):
         self,
         domain: Domain,
         centering: ScalarCentering,
+        *,
+        n_ghosts: int = 1,
     ):
         self.domain = domain
         self.centering = centering
 
         dims = domain.dims + (~domain.periodic_dims & ~self.centering.is_ccs).to_mask()
-        super().__init__(dims, n_ghosts=domain.vary_dims.to_mask() * domain.n_ghosts)
+        super().__init__(dims, n_ghosts=domain.vary_dims.to_mask() * n_ghosts)
 
     def set_from_func(self, func: Callable[[Float3], float]):
         for i3 in Range3(self.dims):

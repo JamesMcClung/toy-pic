@@ -9,11 +9,13 @@ class VectorField:
         self,
         domain: Domain,
         centering: VectorCentering,
+        *,
+        n_ghosts: int = 1,
     ):
         self.domain = domain
         self.centering = centering
 
-        self._components = [ScalarField(domain, c) for c in centering]
+        self._components = [ScalarField(domain, c, n_ghosts=n_ghosts) for c in centering]
 
     def __getitem__(self, d: int) -> ScalarField:
         return self._components[d]
