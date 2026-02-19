@@ -29,6 +29,9 @@ class Vec3[T]:
     def copy(self) -> Self:
         return self.__class__(self.x, self.y, self.z)
 
+    def __str__(self) -> str:
+        return f"[{self.x}, {self.y}, {self.z}]"
+
     @property
     def x(self) -> T:
         return self[0]
