@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Self
+
 from lib.centering import VectorCentering
 from lib.domain import Domain
 from lib.scalar_field import ScalarField
@@ -5,17 +9,23 @@ from lib.vec3 import Bool3, Float3, Int3
 
 
 class VectorField:
-    def __init__(
-        self,
+    def __init__(self, x: ScalarField, y: ScalarField, z: ScalarField):
+        assert x.domain == y.domain == z.domain
+
+        self.domain = x.domain
+        self.centering = VectorCentering(x.centering, y.centering, z.centering)
+        self._components = [x, y, z]
+
+    @classmethod
+    def zeros(
+        cls,
         domain: Domain,
         centering: VectorCentering,
         *,
         n_ghosts: int | Int3 | tuple[Int3, Int3] = 1,
-    ):
-        self.domain = domain
-        self.centering = centering
-
-        self._components = [ScalarField(domain, c, n_ghosts=n_ghosts) for c in centering]
+    ) -> Self:
+        _components = [ScalarField(domain, c, n_ghosts=n_ghosts) for c in centering]
+        return cls(*_components)
 
     def __getitem__(self, d: int) -> ScalarField:
         return self._components[d]
@@ -36,7 +46,7 @@ class VectorField:
 def test():
     dims = Int3(1, 8, 4)
     domain = Domain(dims, Float3(0.5, 0.5, 0.5), periodic_dims=Bool3(True, False, True))
-    ec_field = VectorField(domain, VectorCentering.ec())
+    ec_field = VectorField.zeros(domain, VectorCentering.ec())
 
     assert (ec_field.x.dims == Int3(1, 9, 4)).all()
     assert (ec_field.x.n_ghosts_lower == Int3(0, 1, 1)).all()
