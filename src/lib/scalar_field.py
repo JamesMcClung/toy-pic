@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from typing import Callable
 
 import numpy as np
 
+from lib import numpy_utils
 from lib.centering import ScalarCentering
 from lib.domain import Domain
 from lib.range3 import Range3
@@ -28,7 +31,11 @@ class ScalarField:
             n_ghosts = (n_ghosts, n_ghosts)
         self.n_ghosts_lower, self.n_ghosts_upper = n_ghosts
 
-        self._array = _array if _array is not None else np.zeros(self.n_ghosts_lower + self.dims + self.n_ghosts_upper)
+        if _array is None:
+            self._array = np.zeros(self.n_ghosts_lower + self.dims + self.n_ghosts_upper)
+        else:
+            assert (Int3(*_array.shape) == self.n_ghosts_lower + self.dims + self.n_ghosts_upper).all()
+            self._array = _array
 
     def _shift_idx(self, i3: Int3) -> Int3:
         return i3 + self.n_ghosts_lower
@@ -43,6 +50,36 @@ class ScalarField:
         for i3 in Range3(self.dims):
             pos = self.domain.corner_pos + self.domain.deltas * (i3.to_float3() + self.centering.offsets)
             self[i3] = func(pos)
+
+    def gradient1d(self, d: int) -> ScalarField:
+        grad_arr = np.diff(self._array, 1, axis=d)
+        grad_arr /= self.domain.deltas[d]
+
+        grad_centering = self.centering.switched(d)
+
+        grad_n_ghosts_lower = self.n_ghosts_lower.copy()
+        grad_n_ghosts_upper = self.n_ghosts_upper.copy()
+        if self.centering.is_ccs[d]:
+            # cc -> nc
+            # on left side: lose a ghost
+            grad_n_ghosts_lower[d] -= 1
+            # on right side, if aperiodic: lose a ghost (and gain a non-ghost, which happens implicitly)
+            grad_n_ghosts_upper[d] -= 1
+            # on right side, if periodic: lose a ghost (and must explicitly remove it)
+            if self.domain.periodic_dims[d]:
+                grad_arr = numpy_utils.take_slice(grad_arr, d, slice(0, -1))
+        else:
+            # nc -> cc
+            # on left side: no change in ghosts
+            # on right side, if aperiodic: no change in ghosts (so lose a non-ghost, which happens implicitly)
+            # on right side, if periodic: lose a ghost (and gain a non-ghost, which happens implicitly)
+            if self.domain.periodic_dims[d]:
+                grad_n_ghosts_upper[d] -= 1
+
+        if grad_n_ghosts_lower[d] < 0 or grad_n_ghosts_upper[d] < 0:
+            raise NotImplementedError("shrinking domain not yet supported")
+
+        return ScalarField(self.domain, grad_centering, n_ghosts=(grad_n_ghosts_lower, grad_n_ghosts_upper), _array=grad_arr)
 
 
 def test():
@@ -71,3 +108,35 @@ def test():
 
     assert nc_field[Int3(0, 1, 0)] == 1.0
     assert nc_field[Int3(0, 2, 0)] == 2.0
+
+    # aperiodic gradient tests
+
+    nc_grad_y = nc_field.gradient1d(1)
+    assert nc_grad_y.centering.is_ccs[1]
+    assert nc_grad_y.n_ghosts_lower[1] == 1
+    assert nc_grad_y.n_ghosts_upper[1] == 1
+    assert nc_grad_y.dims[1] == nc_field.dims[1] - 1
+    assert nc_grad_y[Int3(0, 1, 0)] == 1.0
+
+    nc_grad2_y = nc_grad_y.gradient1d(1)
+    assert not nc_grad2_y.centering.is_ccs[1]
+    assert nc_grad2_y.n_ghosts_lower[1] == 0
+    assert nc_grad2_y.n_ghosts_upper[1] == 0
+    assert nc_grad2_y.dims[1] == nc_field.dims[1]
+    assert nc_grad2_y[Int3(0, 1, 0)] == 0.0
+
+    # periodic gradient tests
+
+    nc_grad_z = nc_field.gradient1d(2)
+    assert nc_grad_z.centering.is_ccs[2]
+    assert nc_grad_z.n_ghosts_lower[2] == 1
+    assert nc_grad_z.n_ghosts_upper[2] == 0
+    assert nc_grad_z.dims[2] == nc_field.dims[2]
+    assert nc_grad_z[Int3(0, 1, 0)] == 0.0
+
+    try:
+        # don't have any upper ghosts, so domain has to shrink
+        nc_grad2_z = nc_grad_z.gradient1d(2)
+        assert False
+    except NotImplementedError:
+        pass
