@@ -1,3 +1,5 @@
+from typing import Any
+
 from lib.vec3 import Bool3, Float3, Int3
 
 
@@ -15,3 +17,12 @@ class Domain:
         self.corner_pos = corner_pos or Float3(0, 0, 0)
         self.periodic_dims = periodic_dims or Bool3(True, True, True)
         self.vary_dims = ~((dims == Int3(1, 1, 1)) & self.periodic_dims)
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(other, Domain):
+            return False
+
+        return all((self.dims == other.dims) & (self.deltas == other.deltas) & (self.corner_pos == other.corner_pos) & (self.periodic_dims == other.periodic_dims))
+
+    def __ne__(self, other: Any) -> bool:
+        return not (self == other)
