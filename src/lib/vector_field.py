@@ -42,6 +42,12 @@ class VectorField:
     def z(self) -> ScalarField:
         return self._components[2]
 
+    def curl(self) -> VectorField:
+        curl_x = self.z.gradient1d(1) - self.y.gradient1d(2)
+        curl_y = self.x.gradient1d(2) - self.z.gradient1d(0)
+        curl_z = self.y.gradient1d(0) - self.x.gradient1d(1)
+        return VectorField(curl_x, curl_y, curl_z)
+
 
 def test():
     dims = Int3(1, 8, 4)
@@ -67,3 +73,13 @@ def test():
     assert ec_field.x[Int3(0, 1, 0)] == 0.25
     assert ec_field.y[Int3(0, 1, 0)] == 0.0
     assert ec_field.z[Int3(0, 1, 0)] == 0.0
+
+    # curl test
+
+    ec_field.y.set_from_func(lambda pos: pos.z)
+
+    ec_curl = ec_field.curl()
+    assert ec_curl.centering == VectorCentering.fc()
+    assert ec_curl.x[Int3(0, 1, 1)] == -1.0
+    assert ec_curl.y[Int3(0, 1, 1)] == 0.0
+    assert ec_curl.z[Int3(0, 1, 1)] == 0.0
