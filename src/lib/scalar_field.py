@@ -51,7 +51,10 @@ class ScalarField:
             pos = self.domain.corner_pos + self.domain.deltas * (i3.to_float3() + self.centering.offsets)
             self[i3] = func(pos)
 
-    def gradient1d(self, d: int) -> ScalarField:
+    def gradient1d(self, d: int) -> ScalarField | float:
+        if not self.domain.vary_dims[d]:
+            return 0.0
+
         grad_arr = np.diff(self._array, 1, axis=d)
         grad_arr /= self.domain.deltas[d]
 
