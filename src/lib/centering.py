@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Self
 
 from lib.vec3 import Bool3
@@ -10,6 +12,11 @@ class ScalarCentering:
 
     def copy(self) -> Self:
         return ScalarCentering(self.is_ccs.copy())
+
+    def switched(self, d: int) -> ScalarCentering:
+        is_ccs_switched = self.is_ccs.copy()
+        is_ccs_switched[d] = not is_ccs_switched[d]
+        return ScalarCentering(is_ccs_switched)
 
     @classmethod
     def nc(cls) -> Self:
