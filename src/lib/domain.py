@@ -23,6 +23,3 @@ class Domain:
             return False
 
         return all((self.dims == other.dims) & (self.deltas == other.deltas) & (self.corner_pos == other.corner_pos) & (self.periodic_dims == other.periodic_dims))
-
-    def __ne__(self, other: Any) -> bool:
-        return not (self == other)

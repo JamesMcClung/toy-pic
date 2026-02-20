@@ -37,9 +37,6 @@ class ScalarCentering:
     def __eq__(self, other: ScalarCentering) -> bool:
         return (self.is_ccs == other.is_ccs).all()
 
-    def __ne__(self, other: ScalarCentering) -> bool:
-        return not (self == other)
-
 
 class VectorCentering:
     def __init__(self, x: ScalarCentering, y: ScalarCentering, z: ScalarCentering):
@@ -84,9 +81,6 @@ class VectorCentering:
 
     def __eq__(self, other: VectorCentering) -> bool:
         return self.x == other.x and self.y == other.y and self.z == other.z
-
-    def __ne__(self, other: VectorCentering) -> bool:
-        return not (self == other)
 
 
 def test():
