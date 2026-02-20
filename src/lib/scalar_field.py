@@ -51,6 +51,14 @@ class ScalarField:
             pos = self.domain.corner_pos + self.domain.deltas * (i3.to_float3() + self.centering.offsets)
             self[i3] = func(pos)
 
+    @property
+    def _inner_array(self) -> np.ndarray:
+        return self._array[tuple(slice(lower, -upper or None) for lower, upper in zip(self.n_ghosts_lower, self.n_ghosts_upper))]
+
+    @_inner_array.setter
+    def _inner_array(self, value: np.ndarray):
+        self._array[tuple(slice(lower, -upper or None) for lower, upper in zip(self.n_ghosts_lower, self.n_ghosts_upper))] = value
+
     def gradient1d(self, d: int) -> ScalarField | float:
         if not self.domain.vary_dims[d]:
             return 0.0
