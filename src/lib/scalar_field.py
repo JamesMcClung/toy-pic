@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import Callable, Self
 
 import numpy as np
 
@@ -19,6 +19,7 @@ class ScalarField:
         *,
         n_ghosts: int | Int3 | tuple[Int3, Int3] = 1,
         _array: np.ndarray | None = None,
+        _temp: bool = False,
     ):
         self.domain = domain
         self.centering = centering
@@ -36,6 +37,12 @@ class ScalarField:
         else:
             assert (Int3(*_array.shape) == self.n_ghosts_lower + self.dims + self.n_ghosts_upper).all()
             self._array = _array
+
+        self._temp = _temp
+
+    def temp(self, set_temp: bool = True) -> Self:
+        self._temp = set_temp
+        return self
 
     def _shift_idx(self, i3: Int3) -> Int3:
         return i3 + self.n_ghosts_lower
@@ -90,7 +97,7 @@ class ScalarField:
         if grad_n_ghosts_lower[d] < 0 or grad_n_ghosts_upper[d] < 0:
             raise NotImplementedError("shrinking domain not yet supported")
 
-        return ScalarField(self.domain, grad_centering, n_ghosts=(grad_n_ghosts_lower, grad_n_ghosts_upper), _array=grad_arr)
+        return ScalarField(self.domain, grad_centering, n_ghosts=(grad_n_ghosts_lower, grad_n_ghosts_upper), _array=grad_arr, _temp=True)
 
 
 def test():
