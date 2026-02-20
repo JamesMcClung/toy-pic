@@ -34,6 +34,12 @@ class ScalarCentering:
     def cc(cls) -> Self:
         return cls(Bool3(True, True, True))
 
+    def __eq__(self, other: ScalarCentering) -> bool:
+        return (self.is_ccs == other.is_ccs).all()
+
+    def __ne__(self, other: ScalarCentering) -> bool:
+        return not (self == other)
+
 
 class VectorCentering:
     def __init__(self, x: ScalarCentering, y: ScalarCentering, z: ScalarCentering):
@@ -47,6 +53,18 @@ class VectorCentering:
 
     def __iter__(self):
         yield from self._comp_centerings
+
+    @property
+    def x(self) -> ScalarCentering:
+        return self._comp_centerings[0]
+
+    @property
+    def y(self) -> ScalarCentering:
+        return self._comp_centerings[1]
+
+    @property
+    def z(self) -> ScalarCentering:
+        return self._comp_centerings[2]
 
     @classmethod
     def nc(cls) -> Self:
@@ -63,6 +81,12 @@ class VectorCentering:
     @classmethod
     def cc(cls) -> Self:
         return cls(ScalarCentering.cc(), ScalarCentering.cc(), ScalarCentering.cc())
+
+    def __eq__(self, other: VectorCentering) -> bool:
+        return self.x == other.x and self.y == other.y and self.z == other.z
+
+    def __ne__(self, other: VectorCentering) -> bool:
+        return not (self == other)
 
 
 def test():
