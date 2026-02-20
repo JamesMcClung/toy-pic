@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Self
+from typing import Any, Callable, Self
 
 import numpy as np
 
@@ -98,6 +98,70 @@ class ScalarField:
             raise NotImplementedError("shrinking domain not yet supported")
 
         return ScalarField(self.domain, grad_centering, n_ghosts=(grad_n_ghosts_lower, grad_n_ghosts_upper), _array=grad_arr, _temp=True)
+
+    def is_elementwise_compatible(self, other: ScalarField) -> bool:
+        return self.domain == other.domain and self.centering == other.centering
+
+    def __add__(self, other: ScalarField | float | Any) -> ScalarField:
+        if other == 0.0:
+            return self
+
+        if self._temp:
+            return self.__iadd__(other)
+
+        return NotImplementedError("nontrivial non-temp add not yet supported")
+
+    def __radd__(self, other: ScalarField | float | Any) -> ScalarField:
+        return self + other
+
+    def __iadd__(self, other: ScalarField | float | Any) -> ScalarField:
+        if other == 0.0:
+            return self
+
+        if isinstance(other, float):
+            self._inner_array += other
+            return self
+
+        if isinstance(other, ScalarField):
+            assert self.is_elementwise_compatible(other)
+            self._inner_array += other._inner_array
+            return self
+
+        return NotImplemented
+
+    def __sub__(self, other: ScalarField | float | Any) -> ScalarField:
+        if other == 0.0:
+            return self
+
+        if self._temp:
+            return self.__isub__(other)
+
+        return NotImplementedError("nontrivial non-temp sub not yet supported")
+
+    def __neg__(self) -> ScalarField:
+        if self._temp:
+            np.negative(self._array, out=self._array)
+            return self
+
+        return NotImplementedError("non-temp neg not yet supported")
+
+    def __rsub__(self, other: ScalarField | float | Any) -> ScalarField:
+        return -self + other
+
+    def __isub__(self, other: ScalarField | float) -> ScalarField:
+        if other == 0.0:
+            return self
+
+        if isinstance(other, float):
+            self._inner_array -= other
+            return self
+
+        if isinstance(other, ScalarField):
+            assert self.is_elementwise_compatible(other)
+            self._inner_array -= other._inner_array
+            return self
+
+        return NotImplemented
 
 
 def test():
