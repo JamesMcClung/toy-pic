@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Self
+from typing import Any, Self
 
 from lib.centering import VectorCentering
 from lib.domain import Domain
@@ -47,6 +47,22 @@ class VectorField:
         curl_y = self.x.gradient1d(2) - self.z.gradient1d(0)
         curl_z = self.y.gradient1d(0) - self.x.gradient1d(1)
         return VectorField(curl_x, curl_y, curl_z)
+
+    def __iadd__(self, other: VectorField | Any) -> VectorField:
+        if isinstance(other, VectorField):
+            self.x.__iadd__(other.x)
+            self.y.__iadd__(other.y)
+            self.z.__iadd__(other.z)
+
+        return NotImplemented
+
+    def __isub__(self, other: VectorField | Any) -> VectorField:
+        if isinstance(other, VectorField):
+            self.x.__isub__(other.x)
+            self.y.__isub__(other.y)
+            self.z.__isub__(other.z)
+
+        return NotImplemented
 
 
 def test():
