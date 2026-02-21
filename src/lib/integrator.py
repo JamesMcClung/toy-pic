@@ -37,6 +37,12 @@ class Integrator:
 
     def step(self):
         # TODO particles here
+
         push_b(self.state, self.dt / 2.0)
+        self.ghost_manager.set_ghosts_b(self.state)
+
         push_e(self.state, self.dt)
+        self.ghost_manager.set_ghosts_e(self.state)
+
         push_b(self.state, self.dt / 2.0)
+        self.ghost_manager.set_ghosts_b(self.state)
