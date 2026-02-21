@@ -43,7 +43,7 @@ class Integrator:
     def run_diagnostics(self):
         for diagnostic in self.diagnostics:
             if diagnostic.should_run_at_timestep(self.timestep):
-                diagnostic.run_diagnostic(self.state)
+                diagnostic.run(self.state)
 
     def integrate(self, n_steps: int | None = None):
         if n_steps is None:
