@@ -62,10 +62,6 @@ class ScalarField:
     def _inner_array(self) -> np.ndarray:
         return self._array[tuple(slice(lower, -upper or None) for lower, upper in zip(self.n_ghosts_lower, self.n_ghosts_upper))]
 
-    @_inner_array.setter
-    def _inner_array(self, value: np.ndarray):
-        self._array[tuple(slice(lower, -upper or None) for lower, upper in zip(self.n_ghosts_lower, self.n_ghosts_upper))] = value
-
     def gradient1d(self, d: int) -> ScalarField | float:
         if not self.domain.vary_dims[d]:
             return 0.0
@@ -119,12 +115,12 @@ class ScalarField:
             return self
 
         if isinstance(other, float):
-            self._inner_array += other
+            self._inner_array.__iadd__(other)
             return self
 
         if isinstance(other, ScalarField):
             assert self.is_elementwise_compatible(other)
-            self._inner_array += other._inner_array
+            self._inner_array.__iadd__(other._inner_array)
             return self
 
         return NotImplemented
@@ -153,12 +149,12 @@ class ScalarField:
             return self
 
         if isinstance(other, float):
-            self._inner_array -= other
+            self._inner_array.__isub__(other)
             return self
 
         if isinstance(other, ScalarField):
             assert self.is_elementwise_compatible(other)
-            self._inner_array -= other._inner_array
+            self._inner_array.__isub__(other._inner_array)
             return self
 
         return NotImplemented
