@@ -69,9 +69,10 @@ class VectorField:
             return self
 
         if isinstance(other, float):
-            self.x.__isub__(other)
-            self.y.__isub__(other)
-            self.z.__isub__(other)
+            self.x.__imul__(other)
+            self.y.__imul__(other)
+            self.z.__imul__(other)
+            return self
 
         return NotImplemented
 
