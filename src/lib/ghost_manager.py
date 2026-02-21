@@ -1,4 +1,7 @@
+from typing import Self
+
 from lib.ghost_setters.ghost_setter_base import GhostSetter
+from lib.ghost_setters.periodic import SetGhostsPeriodic
 from lib.state import State
 
 
@@ -18,6 +21,10 @@ class GhostManager1d:
     def set_ghosts_j(self, state: State, d: int):
         self.lower.set_ghosts_j(state, d, False)
         self.upper.set_ghosts_j(state, d, True)
+
+    @classmethod
+    def periodic(cls) -> Self:
+        return cls(SetGhostsPeriodic(), SetGhostsPeriodic())
 
 
 class GhostManager3d:
@@ -47,3 +54,7 @@ class GhostManager3d:
     def set_ghosts_j(self, state: State):
         for d in range(3):
             self._managers[d].set_ghosts_j(state, d)
+
+    @classmethod
+    def periodic(cls) -> Self:
+        return cls(GhostManager1d.periodic(), GhostManager1d.periodic(), GhostManager1d.periodic())
