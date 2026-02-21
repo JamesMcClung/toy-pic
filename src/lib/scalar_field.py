@@ -144,7 +144,7 @@ class ScalarField:
     def __rsub__(self, other: ScalarField | float | Any) -> ScalarField:
         return -self + other
 
-    def __isub__(self, other: ScalarField | float) -> ScalarField:
+    def __isub__(self, other: ScalarField | float | Any) -> ScalarField:
         if other == 0.0:
             return self
 
