@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Callable, Self
 
 import numpy as np
+from numpy import s_
 
 from lib import numpy_utils
 from lib.centering import ScalarCentering
@@ -60,7 +61,7 @@ class ScalarField:
 
     @property
     def _inner_array(self) -> np.ndarray:
-        return self._array[tuple(slice(lower, -upper or None) for lower, upper in zip(self.n_ghosts_lower, self.n_ghosts_upper))]
+        return self._array[tuple(s_[lower : -upper or None] for lower, upper in zip(self.n_ghosts_lower, self.n_ghosts_upper))]
 
     def gradient1d(self, d: int) -> ScalarField | float:
         if not self.domain.vary_dims[d]:
@@ -81,7 +82,7 @@ class ScalarField:
             grad_n_ghosts_upper[d] -= 1
             # on right side, if periodic: lose a ghost (and must explicitly remove it)
             if self.domain.periodic_dims[d]:
-                grad_arr = numpy_utils.take_slice(grad_arr, d, slice(0, -1))
+                grad_arr = numpy_utils.take_slice(grad_arr, d, s_[:-1])
         else:
             # nc -> cc
             # on left side: no change in ghosts
