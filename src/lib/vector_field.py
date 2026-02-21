@@ -64,6 +64,17 @@ class VectorField:
 
         return NotImplemented
 
+    def __imul__(self, other: float | Any) -> VectorField:
+        if other == 1.0:
+            return self
+
+        if isinstance(other, float):
+            self.x.__isub__(other)
+            self.y.__isub__(other)
+            self.z.__isub__(other)
+
+        return NotImplemented
+
 
 def test():
     dims = Int3(1, 8, 4)
