@@ -16,7 +16,9 @@ class Domain:
         self.deltas = deltas
         self.corner_pos = corner_pos or Float3(0, 0, 0)
         self.periodic_dims = periodic_dims or Bool3(True, True, True)
+
         self.vary_dims = ~((dims == Int3(1, 1, 1)) & self.periodic_dims)
+        self.lengths = self.dims.to_float3() * self.deltas
 
     def __eq__(self, other: Any) -> bool:
         if not isinstance(other, Domain):
