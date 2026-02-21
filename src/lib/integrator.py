@@ -10,7 +10,7 @@ from lib.state import State
 class IntegratorBuilder:
     def __init__(self, domain: Domain, dt: float):
         self.dt = dt
-        self.state = State(domain)
+        self.initial_state = State(domain)
         self.ghost_manager = GhostManager3d.periodic()
 
     def build(self) -> Integrator:
@@ -19,7 +19,7 @@ class IntegratorBuilder:
 
 class Integrator:
     def __init__(self, builder: IntegratorBuilder):
-        self.state = builder.state
+        self.state = builder.initial_state
         self.dt = builder.dt
         self.timestep = 0
         self.ghost_manager = builder.ghost_manager
