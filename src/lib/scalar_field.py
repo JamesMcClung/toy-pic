@@ -61,7 +61,10 @@ class ScalarField:
 
     @property
     def _inner_array(self) -> np.ndarray:
-        return self._array[tuple(s_[lower : -upper or None] for lower, upper in zip(self.n_ghosts_lower, self.n_ghosts_upper))]
+        return self._array[*self.inner_slices()]
+
+    def inner_slices(self) -> list[slice]:
+        return [s_[lower : -upper or None] for lower, upper in zip(self.n_ghosts_lower, self.n_ghosts_upper)]
 
     def gradient1d(self, d: int) -> ScalarField | float:
         if not self.domain.vary_dims[d]:
