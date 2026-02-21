@@ -1,6 +1,6 @@
 from numpy import s_
 
-from lib.ghost_manager import GhostSetter
+from lib.ghost_setters.ghost_setter_base import GhostSetter
 from lib.scalar_field import ScalarField
 from lib.state import State
 
