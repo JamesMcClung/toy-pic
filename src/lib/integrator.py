@@ -26,8 +26,10 @@ class Integrator:
 
         for d in range(3):
             if self.state.domain.periodic_dims[d]:
-                assert isinstance(self.ghost_manager._managers[d].lower, SetGhostsPeriodic)
-                assert isinstance(self.ghost_manager._managers[d].upper, SetGhostsPeriodic)
+                if not isinstance(self.ghost_manager._managers[d].lower, SetGhostsPeriodic):
+                    raise TypeError(f"dimension {d} is periodic, and requires periodic lower boundary conditions")
+                if not isinstance(self.ghost_manager._managers[d].upper, SetGhostsPeriodic):
+                    raise TypeError(f"dimension {d} is periodic, and requires periodic upper boundary conditions")
 
         self.ghost_manager.set_ghosts_b(self.state)
         self.ghost_manager.set_ghosts_e(self.state)
