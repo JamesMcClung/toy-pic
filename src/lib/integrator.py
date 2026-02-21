@@ -26,7 +26,8 @@ class Integrator:
 
         for d in range(3):
             if self.state.domain.periodic_dims[d]:
-                assert isinstance(self.ghost_manager._managers[d], SetGhostsPeriodic)
+                assert isinstance(self.ghost_manager._managers[d].lower, SetGhostsPeriodic)
+                assert isinstance(self.ghost_manager._managers[d].upper, SetGhostsPeriodic)
 
         self.ghost_manager.set_ghosts_b(self.state)
         self.ghost_manager.set_ghosts_e(self.state)
