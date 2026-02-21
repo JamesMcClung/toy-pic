@@ -53,6 +53,7 @@ class VectorField:
             self.x.__iadd__(other.x)
             self.y.__iadd__(other.y)
             self.z.__iadd__(other.z)
+            return self
 
         return NotImplemented
 
@@ -61,6 +62,7 @@ class VectorField:
             self.x.__isub__(other.x)
             self.y.__isub__(other.y)
             self.z.__isub__(other.z)
+            return self
 
         return NotImplemented
 
