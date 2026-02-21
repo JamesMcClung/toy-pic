@@ -163,6 +163,16 @@ class ScalarField:
 
         return NotImplemented
 
+    def __imul__(self, other: float | Any) -> ScalarField:
+        if other == 1.0:
+            return self
+
+        if isinstance(other, float):
+            self._inner_array.__imul__(other)
+            return self
+
+        return NotImplemented
+
 
 def test():
     ncells = Int3(1, 8, 4)
