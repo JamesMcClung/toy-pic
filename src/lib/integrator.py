@@ -41,6 +41,8 @@ class Integrator:
                 self.step()
 
     def step(self):
+        self.timestep += 1
+
         # TODO particles here
 
         push_b(self.state, self.dt / 2.0)
