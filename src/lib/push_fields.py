@@ -1,11 +1,11 @@
-from lib.vector_field import VectorField
+from lib.state import State
 
 
-def push_e(e: VectorField, b: VectorField, j: VectorField, dt: float):
+def push_e(state: State, dt: float):
     # dE/dt = curl B - j
-    e += b.curl().__isub__(j).__imul__(dt)
+    state.e += state.b.curl().__isub__(state.j).__imul__(dt)
 
 
-def push_b(e: VectorField, b: VectorField, dt: float):
+def push_b(state: State, dt: float):
     # dB/dt = -curl E
-    b -= e.curl().__imul__(dt)
+    state.b -= state.e.curl().__imul__(dt)
