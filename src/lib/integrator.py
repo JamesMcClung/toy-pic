@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from lib.diagnostic_base import Diagnostic
 from lib.domain import Domain
 from lib.ghost_manager import GhostManager3d
 from lib.ghost_setters.periodic import SetGhostsPeriodic
@@ -12,6 +13,7 @@ class IntegratorBuilder:
         self.dt = dt
         self.initial_state = State(domain)
         self.ghost_manager = GhostManager3d.periodic()
+        self.diagnostics: list[Diagnostic] = []
 
     def build(self) -> Integrator:
         return Integrator(self)
@@ -22,6 +24,7 @@ class Integrator:
         self.state = builder.initial_state
         self.dt = builder.dt
         self.timestep = 0
+        self.diagnostics = builder.diagnostics
         self.ghost_manager = builder.ghost_manager
 
         for d in range(3):
@@ -34,6 +37,13 @@ class Integrator:
         self.ghost_manager.set_ghosts_b(self.state)
         self.ghost_manager.set_ghosts_e(self.state)
         self.ghost_manager.set_ghosts_j(self.state)
+
+        self.run_diagnostics()
+
+    def run_diagnostics(self):
+        for diagnostic in self.diagnostics:
+            if diagnostic.should_run_at_timestep(self.timestep):
+                diagnostic.run_diagnostic(self.state)
 
     def integrate(self, n_steps: int | None = None):
         if n_steps is None:
@@ -56,3 +66,5 @@ class Integrator:
 
         push_b(self.state, self.dt / 2.0)
         self.ghost_manager.set_ghosts_b(self.state)
+
+        self.run_diagnostics()
