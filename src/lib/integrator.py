@@ -23,9 +23,14 @@ class Integrator:
         self.dt = builder.dt
         self.timestep = 0
         self.ghost_manager = builder.ghost_manager
+
         for d in range(3):
             if self.state.domain.periodic_dims[d]:
                 assert isinstance(self.ghost_manager._managers[d], SetGhostsPeriodic)
+
+        self.ghost_manager.set_ghosts_b(self.state)
+        self.ghost_manager.set_ghosts_e(self.state)
+        self.ghost_manager.set_ghosts_j(self.state)
 
     def integrate(self, n_steps: int | None = None):
         if n_steps is None:
