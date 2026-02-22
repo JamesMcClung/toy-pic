@@ -16,5 +16,5 @@ class WavePacket(Case):
     def ey(self, pos: Float3) -> float:
         return 1.0 * np.exp(-(((pos.x - self.packet_pos) / self.packet_width) ** 2)) * np.sin(2.0 * np.pi * (pos.x - self.packet_pos) / self.wavelength)
 
-    def by(self, pos: Float3) -> float:
+    def bz(self, pos: Float3) -> float:
         return 1.0 * np.exp(-(((pos.x - self.packet_pos) / self.packet_width) ** 2)) * np.sin(2.0 * np.pi * (pos.x - self.packet_pos) / self.wavelength)
