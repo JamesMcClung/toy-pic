@@ -55,6 +55,7 @@ class Integrator:
 
     def step(self):
         self.timestep += 1
+        self.state.time += self.dt
 
         # TODO particles here
 
