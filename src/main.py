@@ -1,17 +1,19 @@
 import fastplotlib as fpl
 import numpy as np
 
-from cases.wave_packet import WavePacket
 from lib.domain import Domain
+from lib.ghost_setters.dirichlet import SetGhostsDirichlet
+from lib.ghost_setters.radiative import SetGhostsRadiative
 from lib.integrator import IntegratorBuilder
 from lib.state import State
-from lib.vec3 import Float3, Int3
+from lib.vec3 import Bool3, Float3, Int3
 
-domain = Domain(Int3(256, 2, 1), Float3(1.0, 1.0, 1.0))
+domain = Domain(Int3(256, 2, 1), Float3(1.0, 1.0, 1.0), periodic_dims=Bool3(False, True, True))
 
 builder = IntegratorBuilder(domain, 0.15)
 
-WavePacket(domain).init_state(builder.initial_state)
+builder.ghost_manager.x.lower = SetGhostsRadiative(builder.dt, 1.0, 4.0)
+builder.ghost_manager.x.upper = SetGhostsDirichlet(Float3(0.0, 0.0, 0.0), Float3(0.0, 0.0, 0.0))
 
 integrator = builder.build()
 
@@ -23,7 +25,7 @@ def get_image_data(state: State) -> np.ndarray:
 
 
 IMAGE_NAME = "image"
-figure[0, 0].add_image(data=get_image_data(integrator.state), name=IMAGE_NAME)
+figure[0, 0].add_image(data=get_image_data(integrator.state), name=IMAGE_NAME, vmin=-2.0, vmax=2.0, cmap="RdBu")
 
 
 def next_image(subplot: fpl.layouts.Subplot):
