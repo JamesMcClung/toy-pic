@@ -59,6 +59,9 @@ class ScalarField:
             pos = self.domain.corner_pos + self.domain.deltas * (i3.to_float3() + self.centering.offsets)
             self[i3] = func(pos)
 
+    def get_inner_positions(self, d: int) -> np.ndarray:
+        return self.domain.corner_pos[d] + (np.arange(self.dims[d]) + self.centering.offsets[d]) * self.domain.deltas[d]
+
     @property
     def _inner_array(self) -> np.ndarray:
         return self._array[*self.inner_slices()]
