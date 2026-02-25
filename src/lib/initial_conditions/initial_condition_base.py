@@ -2,7 +2,7 @@ from lib.state import State
 from lib.vec3 import Float3
 
 
-class Case:
+class InitialCondition:
     def ex(self, pos: Float3) -> float:
         return 0.0
 

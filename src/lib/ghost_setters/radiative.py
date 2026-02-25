@@ -1,15 +1,45 @@
+from abc import ABC, abstractmethod
+from typing import Callable
+
 import numpy as np
 
 from lib.ghost_setters.ghost_setter_base import GhostSetter
 from lib.state import State
 
+type WaveForm = Callable[[np.ndarray, np.ndarray, float], float | np.ndarray]
+
+
+class WaveForm(ABC):
+    @abstractmethod
+    def sample(self, pos_x: np.ndarray, pos_y: np.ndarray, t: float) -> np.ndarray | float: ...
+
+
+class PlaneWave(WaveForm):
+    def __init__(self, amplitude: float, wavelength: float):
+        self.amplitude = amplitude
+        self.wavelength = wavelength
+
+    def sample(self, pos_x: np.ndarray, pos_y: np.ndarray, t: float) -> np.ndarray | float:
+        return self.amplitude * np.sin(-t / self.wavelength)
+
+
+class ZeroForm(WaveForm):
+    def sample(self, pos_x: np.ndarray, pos_y: np.ndarray, t: float) -> np.ndarray | float:
+        return 0.0
+
 
 class SetGhostsRadiative(GhostSetter):
-    def __init__(self, dt: float, amplitude: float, wavelength: float):
+    def __init__(
+        self,
+        dt: float,
+        *,
+        s: WaveForm | None = None,
+        p: WaveForm | None = None,
+    ):
         self.dt = dt
 
-        self.s = lambda pos_x, pos_y, t: amplitude * np.sin(-t / wavelength)
-        self.p = lambda pos_x, pos_y, t: 0.0
+        self.s = s or ZeroForm()
+        self.p = p or ZeroForm()
 
     def set_ghosts_e(self, state: State, d: int, upper: bool):
         pass
@@ -46,7 +76,7 @@ class SetGhostsRadiative(GhostSetter):
         jx_slices[d] = slice(jx.n_ghosts_lower[d], jx.n_ghosts_lower[d] + 1)
 
         sx_posx, sx_posy = np.meshgrid(ex.get_inner_positions(d1), ex.get_inner_positions(d2))
-        sx = self.s(sx_posx, sx_posy, state.time)
+        sx = self.s.sample(sx_posx, sx_posy, state.time)
 
         # By[t; x+, y, 0-] = 1/(1+dt/dz) * (
         #       4 * S[t; x+, y, 0]
@@ -95,7 +125,7 @@ class SetGhostsRadiative(GhostSetter):
         jy_slices[d] = slice(jy.n_ghosts_lower[d], jy.n_ghosts_lower[d] + 1)
 
         py_posx, py_posy = np.meshgrid(ey.get_inner_positions(d1), ey.get_inner_positions(d2))
-        py = self.s(py_posx, py_posy, state.time)
+        py = self.s.sample(py_posx, py_posy, state.time)
 
         # Bx[t; x, y+, 0-] = 1/(1+dt/dz) * (
         #      -4 * P[t; x, y+, 0]

@@ -4,16 +4,18 @@ import numpy as np
 from lib.domain import Domain
 from lib.ghost_setters.dirichlet import SetGhostsDirichlet
 from lib.ghost_setters.radiative import SetGhostsRadiative
+from lib.initial_conditions.wave_packet import WavePacket
 from lib.integrator import IntegratorBuilder
 from lib.state import State
 from lib.vec3 import Bool3, Float3, Int3
 
-domain = Domain(Int3(256, 2, 1), Float3(1.0, 1.0, 1.0), periodic_dims=Bool3(False, True, True))
+domain = Domain(Int3(64, 2, 1), Float3(1.0, 1.0, 1.0), periodic_dims=Bool3(False, True, True))
 
 builder = IntegratorBuilder(domain, 0.15)
 
-builder.ghost_manager.x.lower = SetGhostsRadiative(builder.dt, 1.0, 4.0)
+builder.ghost_manager.x.lower = SetGhostsRadiative(builder.dt)
 builder.ghost_manager.x.upper = SetGhostsDirichlet(Float3(0.0, 0.0, 0.0), Float3(0.0, 0.0, 0.0))
+WavePacket(domain, pos=domain.lengths.x / 2, dir=-1, width=6.0).init_state(builder.initial_state)
 
 integrator = builder.build()
 
