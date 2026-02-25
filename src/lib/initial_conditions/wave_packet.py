@@ -1,11 +1,11 @@
 import numpy as np
 
-from lib.cases.case_base import Case
 from lib.domain import Domain
+from lib.initial_conditions.initial_condition_base import InitialCondition
 from lib.vec3 import Float3
 
 
-class WavePacket(Case):
+class WavePacket(InitialCondition):
     def __init__(
         self,
         domain: Domain,
