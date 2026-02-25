@@ -1,6 +1,6 @@
 import numpy as np
 
-from cases.case_base import Case
+from lib.cases.case_base import Case
 from lib.domain import Domain
 from lib.vec3 import Float3
 
