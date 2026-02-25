@@ -1,3 +1,5 @@
+from typing import Literal
+
 import numpy as np
 
 from lib.domain import Domain
@@ -13,15 +15,17 @@ class WavePacket(InitialCondition):
         pos: float | None = None,
         width: float | None = None,
         wavelength: float | None = None,
+        dir: Literal[-1, 1] = 1,
     ):
         self.domain = domain
 
         self.packet_width = width if width is not None else domain.lengths.x / 16.0
         self.packet_pos = pos if pos is not None else domain.corner_pos.x + self.packet_width / 2.0
         self.wavelength = wavelength if wavelength is not None else self.packet_width / 2.0
+        self.dir = float(dir)
 
     def ey(self, pos: Float3) -> float:
         return 1.0 * np.exp(-(((pos.x - self.packet_pos) / self.packet_width) ** 2)) * np.sin(2.0 * np.pi * (pos.x - self.packet_pos) / self.wavelength)
 
     def bz(self, pos: Float3) -> float:
-        return 1.0 * np.exp(-(((pos.x - self.packet_pos) / self.packet_width) ** 2)) * np.sin(2.0 * np.pi * (pos.x - self.packet_pos) / self.wavelength)
+        return self.dir * 1.0 * np.exp(-(((pos.x - self.packet_pos) / self.packet_width) ** 2)) * np.sin(2.0 * np.pi * (pos.x - self.packet_pos) / self.wavelength)
